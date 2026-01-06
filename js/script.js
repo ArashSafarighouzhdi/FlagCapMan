@@ -22,6 +22,10 @@ fetch("./json/countries.json")
   })
   .catch((error) => console.error("Error loading JSON:", error));
 
+function getNormalizedCapital() {
+  return correctCountry.capital.toUpperCase().trim().replace(/\s+/g, " ");
+}
+
 function startNewRound() {
   const result = document.querySelector(".result");
   result.textContent = "";
@@ -90,11 +94,17 @@ function showWordProgress() {
   const wordContainer = document.querySelector(".word");
   wordContainer.innerHTML = "";
 
-  const capital = correctCountry.capital.toUpperCase();
-  for (let letter of capital) {
+  const capital = getNormalizedCapital();
+
+  for (let ch of capital) {
     const span = document.createElement("span");
-    span.textContent =
-      letter === " " ? " " : guessedLetters.includes(letter) ? letter : "_";
+
+    if (ch === " " || ch === "-" || ch === "'") {
+      span.textContent = ch === " " ? "\u00A0\u00A0" : ch;
+      span.style.borderBottom = "none";
+    } else {
+      span.textContent = guessedLetters.includes(ch) ? ch : "_";
+    }
 
     wordContainer.appendChild(span);
   }
@@ -118,12 +128,17 @@ function handleLetterGuess(letter, btn) {
   const capital = correctCountry.capital.toUpperCase();
 
   if (capital.includes(letter)) {
-    guessedLetters.push(letter);
+    if (!guessedLetters.includes(letter)) {
+      guessedLetters.push(letter);
+    }
     showWordProgress();
 
     const allRevealed = capital
       .split("")
-      .every((ch) => ch === " " || guessedLetters.includes(ch));
+      .every(
+        (ch) =>
+          ch === " " || ch === "-" || ch === "'" || guessedLetters.includes(ch)
+      );
 
     if (allRevealed) {
       result.textContent = "🎉 Well done! You guessed it right!";
