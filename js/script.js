@@ -14,7 +14,7 @@ const hangmanImagePaths = [
   "./images/hangman-5.svg",
 ];
 
-fetch("./json/countries2.json")
+fetch("./json/countries.json")
   .then((response) => response.json())
   .then((data) => {
     countriesData = data;
